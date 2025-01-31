@@ -32,6 +32,7 @@ typedef struct _CHIPS_RELEASED {
 } CHIPS_RELEASED;
 
 static const CHIPS_RELEASED sChipsReleased[] = {
+    { 0x1050, 0x0000, 0x0000, "NVIDIA GeForce 520M" },
     { 0x1340, 0x0000, 0x0000, "NVIDIA GeForce 830M" },
     { 0x1340, 0x2b2b, 0x103c, "NVIDIA GeForce 830A" },
     { 0x1341, 0x0000, 0x0000, "NVIDIA GeForce 840M" },
