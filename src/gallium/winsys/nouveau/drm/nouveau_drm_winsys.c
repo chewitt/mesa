@@ -12,6 +12,8 @@
 #include "nouveau/nouveau_screen.h"
 #include "nouveau/nouveau_winsys.h"
 
+#include "nv_device_info.h"
+
 static struct pipe_screen *
 nouveau_screen_create(int fd, const struct pipe_screen_config *config,
                       struct renderonly *ro)

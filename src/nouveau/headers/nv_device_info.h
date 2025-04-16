@@ -1,10 +1,14 @@
 #ifndef NV_DEVINFO_H
 #define NV_DEVINFO_H
 
+#include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 
 #include "util/macros.h"
+
+#include "nvidia/g_nv_name_legacy340.h"
+#include "nvidia/g_nv_name_released.h"
 
 #define NVIDIA_VENDOR_ID 0x10de
 
@@ -68,6 +72,42 @@ nv_device_uuid(const struct nv_device_info *info, uint8_t *uuid, size_t len, boo
       uuid[10] = info->pci.func;
    }
    uuid[11] = vm_bind;
+}
+
+static const char *
+name_for_chip(uint32_t dev_id,
+              uint16_t subsystem_id,
+              uint16_t subsystem_vendor_id)
+{
+   const char *name = NULL;
+
+   const size_t total_size = ARRAY_SIZE(sChipsLegacy340) + ARRAY_SIZE(sChipsReleased);
+   const CHIPS_RELEASED *combinedChips[total_size];
+   memcpy(combinedChips, sChipsLegacy340, sizeof(sChipsLegacy340));
+   memcpy(combinedChips + ARRAY_SIZE(sChipsLegacy340), sChipsReleased, sizeof(sChipsReleased));
+
+   for (size_t i = 0; i < total_size; i++) {
+      const CHIPS_RELEASED *chip = combinedChips[i];
+
+      if (dev_id != chip->devID)
+         continue;
+
+      if (chip->subSystemID == 0 && chip->subSystemVendorID == 0) {
+         // When subSystemID and subSystemVendorID are both 0, this is the
+         // default name for the given chip. A more specific name may exist
+         // elsewhere in the list.
+         assert(name == NULL);
+         name = chip->name;
+         continue;
+      }
+
+      // If we find a specific name, return it
+      if (chip->subSystemID == subsystem_id &&
+          chip->subSystemVendorID == subsystem_vendor_id)
+         return chip->name;
+   }
+
+   return name;
 }
 
 #endif /* NV_DEVINFO_H */

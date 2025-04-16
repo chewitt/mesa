@@ -2,7 +2,7 @@
 
 #include "nouveau_context.h"
 
-#include "nvidia/g_nv_name_released.h"
+#include "nv_device_info.h"
 
 #include "drm-uapi/nouveau_drm.h"
 #include "util/hash_table.h"
@@ -16,37 +16,6 @@
 #include "nvif/ioctl.h"
 #include <unistd.h>
 #include <xf86drm.h>
-
-static const char *
-name_for_chip(uint32_t dev_id,
-              uint16_t subsystem_id,
-              uint16_t subsystem_vendor_id)
-{
-   const char *name = NULL;
-   for (uint32_t i = 0; i < ARRAY_SIZE(sChipsReleased); i++) {
-      const CHIPS_RELEASED *chip = &sChipsReleased[i];
-
-      if (dev_id != chip->devID)
-         continue;
-
-      if (chip->subSystemID == 0 && chip->subSystemVendorID == 0) {
-         /* When subSystemID and subSystemVendorID are both 0, this is the
-          * default name for the given chip.  A more specific name may exist
-          * elsewhere in the list.
-          */
-         assert(name == NULL);
-         name = chip->name;
-         continue;
-      }
-
-      /* If we find a specific name, return it */
-      if (chip->subSystemID == subsystem_id &&
-          chip->subSystemVendorID == subsystem_vendor_id)
-         return chip->name;
-   }
-
-   return name;
-}
 
 static uint8_t
 sm_for_chipset(uint16_t chipset)
