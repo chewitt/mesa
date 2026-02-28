@@ -445,11 +445,12 @@ panthor_kmod_bo_import(struct pan_kmod_dev *dev, uint32_t handle, uint64_t size)
          goto err_free_bo;
       }
 
-      /* If the BO comes from a different subsystem, we don't allow
-       * mmap() to avoid the CPU-sync churn.
+      /* Don't set PAN_KMOD_BO_FLAG_NO_MMAP for externally imported BOs.
+       * In renderonly setups (e.g. RK3588), scanout buffers are dumb
+       * buffers created by the display driver and imported into the GPU.
+       * These BOs may need CPU mapping for AFBC header initialization
+       * in the gallium driver's resource creation path.
        */
-      if (args.extra_flags & DRM_PANTHOR_BO_IS_IMPORTED)
-         flags |= PAN_KMOD_BO_FLAG_NO_MMAP;
    }
 
    /* Create a unsignalled syncobj on import. Will serve as a
