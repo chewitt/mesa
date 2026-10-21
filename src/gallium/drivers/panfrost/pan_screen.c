@@ -734,6 +734,22 @@ panfrost_init_screen_caps(struct panfrost_screen *screen)
    caps->shader_pixel_local_storage_fast_size =
       caps->shader_pixel_local_storage_size = (dev->arch >= 6) ? 16 : 0;
 
+   if (dev->arch >= 6) {
+      caps->shader_subgroup_size = pan_subgroup_size(dev->arch);
+      caps->shader_subgroup_supported_stages =
+         BITFIELD_BIT(MESA_SHADER_FRAGMENT) | BITFIELD_BIT(MESA_SHADER_COMPUTE);
+      caps->shader_subgroup_supported_features =
+         PIPE_SHADER_SUBGROUP_FEATURE_BASIC |
+         PIPE_SHADER_SUBGROUP_FEATURE_VOTE |
+         PIPE_SHADER_SUBGROUP_FEATURE_ARITHMETIC |
+         PIPE_SHADER_SUBGROUP_FEATURE_BALLOT |
+         PIPE_SHADER_SUBGROUP_FEATURE_SHUFFLE |
+         PIPE_SHADER_SUBGROUP_FEATURE_SHUFFLE_RELATIVE |
+         PIPE_SHADER_SUBGROUP_FEATURE_CLUSTERED |
+         PIPE_SHADER_SUBGROUP_FEATURE_QUAD;
+      caps->shader_subgroup_quad_all_stages = false;
+   }
+
    caps->vs_instanceid = true;
    caps->texture_multisample = true;
    caps->surface_sample_count = true;
